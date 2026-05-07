@@ -8,3 +8,4 @@ public class ComparadorFrutaPorHectareas implements Comparator<Fruta> {
         return Double.compare(f1.getHectareas(), f2.getHectareas());
     }
 }
+

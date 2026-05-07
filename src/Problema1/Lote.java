@@ -1,24 +1,50 @@
 package Problema1;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.*;
 
 public class Lote implements Comparable<Lote> {
+
+    private static final int MIN_PIEZAS = 50;
+    private static final int MAX_PIEZAS = 350;
 
     private int numeroLote;
     private int numeroPiezas;
     private LocalDate fechaFabricacion;
     private Prenda prenda;
 
-    public Lote(int numeroLote, int numeroPiezas, LocalDate fechaFabricacion, Prenda prenda) {
+    public Lote(int numeroLote, int numeroPiezas, LocalDate fechaFabricacion, Prenda prenda)
+            throws NumeroPiezasInvalidoException {
+
+        validarNumeroPiezas(numeroPiezas);
+
         this.numeroLote = numeroLote;
         this.numeroPiezas = numeroPiezas;
         this.fechaFabricacion = fechaFabricacion;
         this.prenda = prenda;
+    }
+
+    private void validarNumeroPiezas(int piezas) throws NumeroPiezasInvalidoException {
+        if (piezas < MIN_PIEZAS || piezas > MAX_PIEZAS) {
+            throw new NumeroPiezasInvalidoException(piezas);
+        }
+    }
+
+    public double calcularCostoProduccion() {
+        return prenda.getCostoProduccion() * numeroPiezas;
+    }
+
+    public double calcularMontoRecuperacion() {
+
+        double precioPorPieza = prenda.getCostoProduccion() * 1.15;
+        return precioPorPieza * numeroPiezas;
+    }
+
+    public double calcularMontoRecuperacionLoteCompleto() {
+
+        double precioPorPieza = prenda.getCostoProduccion() * 1.05;
+        return precioPorPieza * numeroPiezas;
     }
 
     public int getNumeroLote() {
@@ -37,16 +63,6 @@ public class Lote implements Comparable<Lote> {
         return prenda;
     }
 
-    public double calcularCostoProduccion() {
-        return numeroPiezas * prenda.getCostoProduccion();
-    }
-
-    public double calcularMontoRecuperacion() {
-        double precioVenta = prenda.calcularPrecioVenta();
-        double precioLote = precioVenta * 1.05;
-        return numeroPiezas * precioLote;
-    }
-
     @Override
     public String toString() {
         return "Lote{" +
@@ -58,11 +74,9 @@ public class Lote implements Comparable<Lote> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Lote)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Lote lote = (Lote) o;
-        return numeroLote == lote.numeroLote &&
-                numeroPiezas == lote.numeroPiezas &&
+        return numeroLote == lote.numeroLote && numeroPiezas == lote.numeroPiezas &&
                 Objects.equals(fechaFabricacion, lote.fechaFabricacion) &&
                 Objects.equals(prenda, lote.prenda);
     }
@@ -76,30 +90,6 @@ public class Lote implements Comparable<Lote> {
     public int compareTo(Lote otro) {
         return Integer.compare(this.numeroLote, otro.numeroLote);
     }
-
-    public static void main(String[] args) {
-
-        Prenda prenda = new Prenda(
-                "Camisa deportiva",
-                "Algodon",
-                120,
-                "Masculino",
-                "Verano"
-        );
-
-        List<Lote> lista = new ArrayList<>();
-
-        lista.add(new Lote(3, 200, LocalDate.of(2024, 5, 1), prenda));
-        lista.add(new Lote(1, 500, LocalDate.of(2024, 1, 10), prenda));
-        lista.add(new Lote(2, 300, LocalDate.of(2024, 3, 15), prenda));
-
-        Collections.sort(lista);
-        System.out.println("Orden por numero de lote:");
-        System.out.println(lista);
-
-        Collections.sort(lista, new ComparadorLotePorFecha());
-        System.out.println("Orden por fecha:");
-        System.out.println(lista);
-    }
 }
+
 

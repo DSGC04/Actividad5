@@ -1,55 +1,65 @@
 package Problema1;
 
 import java.util.*;
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class Prenda implements Comparable<Prenda> {
+
+    private static final List<String> GENEROS_VALIDOS = Arrays.asList("Masculino", "Femenino", "Mixto");
+    private static final List<String> TEMPORADAS_VALIDAS = Arrays.asList("Primavera", "Verano", "Otono", "Invierno");
 
     private String modelo;
     private String tela;
     private double costoProduccion;
     private String genero;
     private String temporada;
+    private double limiteCosto;
 
-    public Prenda(String modelo, String tela, double costoProduccion, String genero, String temporada) {
+    public Prenda(String modelo, String tela, double costoProduccion, String genero, String temporada, double limiteCosto)
+            throws GeneroInvalidoException, TemporadaInvalidaException, CostoProduccionExcedidoException {
+
+        validarGenero(genero);
+        validarTemporada(temporada);
+        validarCosto(costoProduccion, limiteCosto);
+
         this.modelo = modelo;
         this.tela = tela;
         this.costoProduccion = costoProduccion;
         this.genero = genero;
         this.temporada = temporada;
+        this.limiteCosto = limiteCosto;
     }
 
-    public String getModelo() {
-        return modelo;
+    private void validarGenero(String genero) throws GeneroInvalidoException {
+        if (!GENEROS_VALIDOS.contains(genero)) {
+            throw new GeneroInvalidoException(genero);
+        }
     }
 
-    public String getTela() {
-        return tela;
+    private void validarTemporada(String temporada) throws TemporadaInvalidaException {
+        if (!TEMPORADAS_VALIDAS.contains(temporada)) {
+            throw new TemporadaInvalidaException(temporada);
+        }
     }
 
-    public double getCostoProduccion() {
-        return costoProduccion;
+    private void validarCosto(double costo, double limite) throws CostoProduccionExcedidoException {
+        if (costo > limite) {
+            throw new CostoProduccionExcedidoException(costo, limite);
+        }
     }
 
-    public String getGenero() {
-        return genero;
-    }
-
-    public String getTemporada() {
-        return temporada;
-    }
-
-    public double calcularPrecioVenta() {
-        return costoProduccion * 1.15;
-    }
+    public String getModelo() { return modelo; }
+    public String getTela() { return tela; }
+    public double getCostoProduccion() { return costoProduccion; }
+    public String getGenero() { return genero; }
+    public String getTemporada() { return temporada; }
 
     @Override
     public String toString() {
         return "Prenda{" +
                 "modelo='" + modelo + '\'' +
                 ", tela='" + tela + '\'' +
-                ", costoProduccion=$" + costoProduccion +
+                ", costoProduccion=" + costoProduccion +
                 ", genero='" + genero + '\'' +
                 ", temporada='" + temporada + '\'' +
                 '}';
@@ -57,14 +67,11 @@ public class Prenda implements Comparable<Prenda> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Prenda)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Prenda prenda = (Prenda) o;
         return Double.compare(costoProduccion, prenda.costoProduccion) == 0 &&
-                Objects.equals(modelo, prenda.modelo) &&
-                Objects.equals(tela, prenda.tela) &&
-                Objects.equals(genero, prenda.genero) &&
-                Objects.equals(temporada, prenda.temporada);
+                Objects.equals(modelo, prenda.modelo) && Objects.equals(tela, prenda.tela) &&
+                Objects.equals(genero, prenda.genero) && Objects.equals(temporada, prenda.temporada);
     }
 
     @Override
@@ -76,22 +83,6 @@ public class Prenda implements Comparable<Prenda> {
     public int compareTo(Prenda otra) {
         return Double.compare(this.costoProduccion, otra.costoProduccion);
     }
+}
 
-    public static void main(String[] args) {
-
-        List<Prenda> lista = new ArrayList<>();
-
-        lista.add(new Prenda("Camisa", "Algodon", 120, "Masculino", "Verano"));
-        lista.add(new Prenda("Pantalon", "Mezclilla", 200, "Masculino", "Invierno"));
-        lista.add(new Prenda("Blusa", "Seda", 150, "Femenino", "Primavera"));
-
-        Collections.sort(lista);
-        System.out.println("Orden por costo:");
-        System.out.println(lista);
-
-        Collections.sort(lista, new ComparadorPrendaPorModelo());
-        System.out.println("Orden por modelo:");
-        System.out.println(lista);
-    }
-    }
 

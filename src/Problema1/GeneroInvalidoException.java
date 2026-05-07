@@ -1,0 +1,8 @@
+package Problema1;
+
+public class GeneroInvalidoException extends Exception {
+    public GeneroInvalidoException(String genero) {
+        super("Genero invalido: '" + genero + "'. Debe ser Masculino, Femenino o Mixto.");
+    }
+}
+
